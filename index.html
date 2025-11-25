@@ -1,0 +1,1772 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Si Mimi - Sistem Makan Minum</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #89CFF0 0%, #4A90E2 100%);
+            min-height: 100vh;
+        }
+
+        nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 5%;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #5DADE2 0%, #2E86C1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+        }
+
+        .logo-icon::before {
+            content: '🍽️';
+            display: inline-block;
+            animation: changeIcon 1.5s infinite;
+        }
+
+        @keyframes changeIcon {
+            0%, 32.9% {
+                content: '🍽️';
+            }
+            33%, 65.9% {
+                content: '🥤';
+            }
+            66%, 100% {
+                content: '🍪';
+            }
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #5DADE2;
+        }
+
+        .btn-logout {
+            background: linear-gradient(135deg, #5DADE2 0%, #2E86C1 100%);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: transform 0.3s;
+        }
+
+        .btn-logout:hover {
+            transform: translateY(-2px);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: calc(100vh - 80px);
+        }
+
+        .login-box {
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 400px;
+            animation: fadeInUp 0.6s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-box h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .login-box p {
+            text-align: center;
+            color: #666;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #5DADE2;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 0.75rem;
+            background: linear-gradient(135deg, #5DADE2 0%, #2E86C1 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .card h2 {
+            color: #333;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .stat-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: linear-gradient(135deg, #5DADE215 0%, #2E86C115 100%);
+            border-radius: 10px;
+            margin-bottom: 1rem;
+        }
+
+        .stat-box:last-child {
+            margin-bottom: 0;
+        }
+
+        .stat-label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2E86C1;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 2rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #5DADE2 0%, #2E86C1 100%);
+            color: white;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #e0e0e0;
+            transition: background 0.3s;
+        }
+
+        tbody tr:hover {
+            background: #f0f8ff;
+        }
+
+        .badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .badge-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-approved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .btn-action {
+            padding: 0.4rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            margin-right: 0.5rem;
+            transition: transform 0.2s;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-action:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-approve {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-reject {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-view {
+            background: #5DADE2;
+            color: white;
+        }
+
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-refresh {
+            background: #17a2b8;
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: transform 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-refresh:hover {
+            transform: translateY(-2px);
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .table-header h2 {
+            margin: 0;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            margin-bottom: 1.5rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-group select {
+            padding: 0.5rem 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+        }
+
+        .notification {
+            background: white;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            border-left: 4px solid #5DADE2;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .notification-new {
+            background: #f0f8ff;
+        }
+
+        .file-upload {
+            border: 2px dashed #5DADE2;
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .file-upload:hover {
+            background: #f0f8ff;
+        }
+
+        .file-upload input {
+            display: none;
+        }
+
+        .file-list {
+            margin-top: 1rem;
+        }
+
+        .file-item {
+            background: #f0f8ff;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-remove {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .btn-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .login-choice-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                gap: 1rem;
+                font-size: 0.9rem;
+            }
+
+            .container {
+                padding: 0 1rem;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                font-size: 0.9rem;
+            }
+
+            th, td {
+                padding: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Halaman Login -->
+    <div id="loginPage">
+        <div class="login-container">
+            <div class="login-box">
+                <h1>
+                    <span class="logo-icon"></span>
+                    <span>Si Mimi</span>
+                </h1>
+                <p>Sistem Pengajuan Makan Minum</p>
+                
+                <!-- Pilihan Login -->
+                <div id="loginChoice" class="login-choice-buttons">
+                    <button class="btn-primary" onclick="showLoginForm('user')" style="background: linear-gradient(135deg, #5DADE2 0%, #2E86C1 100%);">Login User</button>
+                    <button class="btn-primary" onclick="showLoginForm('admin')" style="background: linear-gradient(135deg, #2E86C1 0%, #1B4F72 100%);">Login Admin</button>
+                </div>
+                
+                <!-- Form Login User -->
+                <form id="userLoginForm" class="hidden">
+                    <h3 style="text-align: center; margin-bottom: 1rem; color: #5DADE2;">👤 Login User</h3>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="userEmail" placeholder="nama@email.com" required>
+                    </div>
+                    <button type="submit" class="btn-primary">Login sebagai User</button>
+                    <button type="button" class="btn-primary" onclick="backToLoginChoice()" style="margin-top: 0.5rem; background: #6c757d;">Kembali</button>
+                </form>
+
+                <!-- Form Login Admin -->
+                <form id="adminLoginForm" class="hidden">
+                    <h3 style="text-align: center; margin-bottom: 1rem; color: #2E86C1;">👨‍💼 Login Admin</h3>
+                    <div class="form-group">
+                        <label>Email Admin</label>
+                        <input type="email" id="adminEmail" placeholder="admin@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password Admin</label>
+                        <input type="password" id="adminPassword" placeholder="Masukkan password admin" required>
+                    </div>
+                    <button type="submit" class="btn-primary" style="background: linear-gradient(135deg, #2E86C1 0%, #1B4F72 100%);">Login sebagai Admin</button>
+                    <button type="button" class="btn-primary" onclick="backToLoginChoice()" style="margin-top: 0.5rem; background: #6c757d;">Kembali</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard User -->
+    <div id="userDashboard" class="hidden">
+        <nav>
+            <div class="logo">
+                <span class="logo-icon"></span>
+                <span>Si Mimi</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#" onclick="showPage('dashboard')">Dashboard</a></li>
+                <li><a href="#" onclick="showPage('ajukan')">Ajukan Permohonan</a></li>
+                <li><a href="#" onclick="showPage('status')">Status Permohonan</a></li>
+                <li><a href="#" onclick="showPage('profil')">Profil</a></li>
+                <li><button class="btn-logout" onclick="logout()">Logout</button></li>
+            </ul>
+        </nav>
+
+        <!-- Dashboard Content -->
+        <div id="dashboardContent" class="container">
+            <div class="dashboard-grid">
+                <div class="card">
+                    <h2>Ringkasan Permohonan</h2>
+                    <div class="stat-box">
+                        <span class="stat-label">Total Permohonan</span>
+                        <span class="stat-value" id="totalPermohonan">0</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-label">Menunggu Approval</span>
+                        <span class="stat-value" id="pendingPermohonan">0</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-label">Disetujui</span>
+                        <span class="stat-value" id="approvedPermohonan">0</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>Notifikasi Terbaru</h2>
+                    <div id="notificationList">
+                        <p style="color: #999;">Belum ada notifikasi</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Permohonan Terakhir</h2>
+                <div id="recentRequests">
+                    <p style="color: #999;">Belum ada permohonan</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Ajukan Permohonan -->
+        <div id="ajukanContent" class="container hidden">
+            <div class="card">
+                <h2>Form Pengajuan Makan Minum</h2>
+                <form id="ajukanForm">
+                    <div class="form-group">
+                        <label>Bagian *</label>
+                        <input type="text" id="bagian" placeholder="Contoh: IT, HRD, Marketing" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Hari & Tanggal Acara *</label>
+                        <input type="date" id="tanggalAcara" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Jenis Acara *</label>
+                        <select id="jenisAcara" required>
+                            <option value="">Pilih Jenis Acara</option>
+                            <option value="Rapat">Rapat</option>
+                            <option value="Tamu">Tamu</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Nama Acara *</label>
+                        <input type="text" id="namaAcara" placeholder="Contoh: Rapat Koordinasi Bulanan" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Jumlah Peserta *</label>
+                        <input type="number" id="jumlahPeserta" min="1" placeholder="Masukkan jumlah peserta" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Upload Surat Permintaan Mamin *</label>
+                        <p style="font-size: 0.9rem; color: #666; margin-bottom: 0.5rem;">
+                            📎 <a href="https://drive.google.com/file/d/1jGMavRSP3u9rgHx9my_MszqH7MX6vekX/view?usp=sharing" target="_blank" style="color: #5DADE2; text-decoration: none;">Download template surat permintaan</a>
+                        </p>
+                        <div class="file-upload" onclick="document.getElementById('suratPermintaan').click()">
+                            <p>📄 Klik untuk upload surat permintaan</p>
+                            <input type="file" id="suratPermintaan" accept=".pdf,.doc,.docx" onchange="handleFileUpload(this, 'suratFile')">
+                        </div>
+                        <div id="suratFile" class="file-list"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Upload Rundown Acara (Jika acara > 5 jam)</label>
+                        <div class="file-upload" onclick="document.getElementById('rundownAcara').click()">
+                            <p>📄 Klik untuk upload rundown acara</p>
+                            <input type="file" id="rundownAcara" accept=".pdf,.doc,.docx" onchange="handleFileUpload(this, 'rundownFile')">
+                        </div>
+                        <div id="rundownFile" class="file-list"></div>
+                    </div>
+
+                    <button type="submit" class="btn-primary">Kirim Permohonan</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Status Permohonan -->
+        <div id="statusContent" class="container hidden">
+            <div class="table-container">
+                <h2 style="margin-bottom: 1.5rem;">Status Permohonan</h2>
+                <div class="filter-group">
+                    <select id="filterStatus" onchange="filterRequests()">
+                        <option value="">Semua Status</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Disetujui">Disetujui</option>
+                        <option value="Ditolak">Ditolak</option>
+                    </select>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Bagian</th>
+                            <th>Tanggal</th>
+                            <th>Jenis Acara</th>
+                            <th>Nama Acara</th>
+                            <th>Peserta</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="requestTableBody">
+                        <tr>
+                            <td colspan="8" style="text-align: center; color: #999;">Belum ada data permohonan</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Profil User -->
+        <div id="profilContent" class="container hidden">
+            <div class="card">
+                <h2>Profil Pengguna</h2>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="profilEmail" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Nama</label>
+                    <input type="text" id="profilNama" placeholder="Masukkan nama Anda">
+                </div>
+                <div class="form-group">
+                    <label>Bagian</label>
+                    <input type="text" id="profilBagian" placeholder="Masukkan bagian Anda">
+                </div>
+                <button class="btn-primary" onclick="updateProfil()">Update Profil</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Admin -->
+    <div id="adminDashboard" class="hidden">
+        <nav>
+            <div class="logo">
+                <span class="logo-icon"></span>
+                <span>Si Mimi Admin</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#" onclick="showAdminPage('adminDash')">Dashboard</a></li>
+                <li><a href="#" onclick="showAdminPage('adminRequests')">Kelola Permohonan</a></li>
+                <li><button class="btn-logout" onclick="logout()">Logout</button></li>
+            </ul>
+        </nav>
+
+        <!-- Admin Dashboard Content -->
+        <div id="adminDashContent" class="container">
+            <div class="dashboard-grid">
+                <div class="card">
+                    <h2>Statistik Permohonan</h2>
+                    <div class="stat-box">
+                        <span class="stat-label">Total Permohonan</span>
+                        <span class="stat-value" id="adminTotal">0</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-label">Menunggu Approval</span>
+                        <span class="stat-value" id="adminPending">0</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-label">Disetujui</span>
+                        <span class="stat-value" id="adminApproved">0</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-label">Ditolak</span>
+                        <span class="stat-value" id="adminRejected">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Kelola Permohonan Admin -->
+        <div id="adminRequestsContent" class="container hidden">
+            <div class="table-container">
+                <div class="table-header">
+                    <h2>Kelola Permohonan</h2>
+                    <button class="btn-refresh" onclick="refreshAdminData()">
+                        <span>🔄</span>
+                        <span>Refresh Data</span>
+                    </button>
+                </div>
+                <div class="filter-group">
+                    <select id="adminFilterStatus" onchange="filterAdminRequests()">
+                        <option value="">Semua Status</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Disetujui">Disetujui</option>
+                        <option value="Ditolak">Ditolak</option>
+                    </select>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Pengaju</th>
+                            <th>Bagian</th>
+                            <th>Tanggal</th>
+                            <th>Jenis Acara</th>
+                            <th>Nama Acara</th>
+                            <th>Peserta</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminRequestTableBody">
+                        <tr>
+                            <td colspan="9" style="text-align: center; color: #999;">Belum ada data permohonan</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Detail -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Detail Permohonan</h2>
+                <button class="btn-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="detailContent"></div>
+        </div>
+    </div>
+
+    <!-- Modal Action (Approve/Reject) -->
+    <div id="actionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="actionModalTitle">Approve Permohonan</h2>
+                <button class="btn-close" onclick="closeActionModal()">&times;</button>
+            </div>
+            <div id="actionAlert"></div>
+            <div class="form-group">
+                <label>Catatan</label>
+                <textarea id="actionNote" rows="4" placeholder="Tambahkan catatan (opsional)"></textarea>
+            </div>
+            <button id="confirmActionBtn" class="btn-primary" onclick="confirmAction()">
+                <span id="btnText">Konfirmasi</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal Delete Confirmation -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>⚠️ Konfirmasi Hapus</h2>
+                <button class="btn-close" onclick="closeDeleteModal()">&times;</button>
+            </div>
+            <div id="deleteAlert"></div>
+            <p style="margin-bottom: 1.5rem; color: #666;">
+                Apakah Anda yakin ingin menghapus permohonan ini? Tindakan ini tidak dapat dibatalkan.
+            </p>
+            <div id="deleteRequestInfo" style="background: #f8f9fa; padding: 1rem; border-radius: 10px; margin-bottom: 1.5rem;">
+            </div>
+            <div style="display: flex; gap: 1rem;">
+                <button class="btn-primary" onclick="closeDeleteModal()" style="background: #6c757d;">Batal</button>
+                <button id="confirmDeleteBtn" class="btn-primary" onclick="confirmDelete()" style="background: #dc3545;">
+                    <span id="deleteText">Hapus Permohonan</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // URL Google Apps Script - GANTI DENGAN URL ANDA
+        const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbyfrUxZATfcYQ4-dwKOSH-y7A8VDLaz6I_ozI3D4uDAkRJRxW7nWNoEFJ1oX3JKCN--Jg/exec';
+        
+        // Global Variables
+        let currentUser = null;
+        let requests = [];
+        let currentAction = null;
+        let currentRequestId = null;
+        let loginMode = null;
+        let deleteRequestId = null;
+
+        // Initialize - Load data from persistent storage
+        window.addEventListener('DOMContentLoaded', async function() {
+            await loadRequestsFromStorage();
+        });
+
+        // Event Listeners
+        document.getElementById('userLoginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            loginUser();
+        });
+
+        document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            loginAdmin();
+        });
+
+        document.getElementById('ajukanForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            submitRequest();
+        });
+
+        // ========== PERSISTENT STORAGE FUNCTIONS ==========
+        // Check if storage API is available
+        const isStorageAvailable = typeof window.storage !== 'undefined';
+
+        async function saveRequestsToStorage() {
+            try {
+                const dataToStore = {
+                    requests: requests,
+                    lastUpdate: new Date().toISOString()
+                };
+                
+                if (isStorageAvailable) {
+                    // Use persistent storage if available
+                    try {
+                        const result = await window.storage.set('simimi:all-requests', JSON.stringify(dataToStore), true);
+                        
+                        if (result) {
+                            console.log('✅ Data saved to persistent storage (shared)');
+                            return true;
+                        }
+                    } catch (error) {
+                        // Fallback to localStorage silently
+                    }
+                }
+                
+                // Use localStorage as fallback
+                localStorage.setItem('simimi:all-requests', JSON.stringify(dataToStore));
+                console.log('✅ Data saved to localStorage');
+                return true;
+                
+            } catch (error) {
+                console.error('❌ Critical: Cannot save data:', error);
+                showNotification('❌ Gagal menyimpan data!', 'error');
+                return false;
+            }
+        }
+
+        async function loadRequestsFromStorage() {
+            try {
+                if (isStorageAvailable) {
+                    // Try to load from persistent storage
+                    try {
+                        const result = await window.storage.get('simimi:all-requests', true);
+                        
+                        if (result && result.value) {
+                            const data = JSON.parse(result.value);
+                            requests = data.requests || [];
+                            console.log('✅ Data loaded from persistent storage:', requests.length, 'items');
+                            console.log('📅 Last update:', data.lastUpdate);
+                            return;
+                        } else {
+                            // Key doesn't exist yet - this is normal for first time use
+                            console.log('ℹ️ No data in persistent storage yet (first time use)');
+                        }
+                    } catch (storageError) {
+                        // Only log if it's not a "key not found" error
+                        if (storageError && !storageError.message?.includes('not found') && !storageError.message?.includes('does not exist')) {
+                            console.log('ℹ️ Persistent storage not accessible, using localStorage');
+                        }
+                    }
+                }
+                
+                // Check localStorage (either as fallback or primary)
+                const localData = localStorage.getItem('simimi:all-requests');
+                if (localData) {
+                    const data = JSON.parse(localData);
+                    requests = data.requests || [];
+                    console.log('✅ Data loaded from localStorage:', requests.length, 'items');
+                } else {
+                    console.log('ℹ️ Starting fresh - no previous data found');
+                    requests = [];
+                }
+            } catch (error) {
+                console.log('ℹ️ Initializing with empty data');
+                requests = [];
+            }
+        }
+
+        async function saveUserSession(userEmail, role) {
+            try {
+                const sessionData = {
+                    email: userEmail,
+                    role: role,
+                    loginTime: new Date().toISOString()
+                };
+                
+                if (isStorageAvailable) {
+                    try {
+                        await window.storage.set('simimi:current-session', JSON.stringify(sessionData), false);
+                        console.log('✅ User session saved');
+                        return;
+                    } catch (error) {
+                        // Fallback to localStorage silently
+                    }
+                }
+                
+                // Use localStorage as fallback
+                localStorage.setItem('simimi:current-session', JSON.stringify(sessionData));
+                console.log('✅ User session saved');
+            } catch (error) {
+                console.error('❌ Error saving user session:', error);
+            }
+        }
+
+        async function loadUserSession() {
+            try {
+                if (isStorageAvailable) {
+                    try {
+                        const result = await window.storage.get('simimi:current-session', false);
+                        if (result && result.value) {
+                            return JSON.parse(result.value);
+                        }
+                    } catch (error) {
+                        // Silently fallback to localStorage - no warning needed
+                    }
+                }
+                
+                // Check localStorage
+                const localSession = localStorage.getItem('simimi:current-session');
+                if (localSession) {
+                    return JSON.parse(localSession);
+                }
+                return null;
+            } catch (error) {
+                // Silent error - no session is normal for new users
+                return null;
+            }
+        }
+
+        async function clearUserSession() {
+            try {
+                if (isStorageAvailable) {
+                    try {
+                        await window.storage.delete('simimi:current-session', false);
+                    } catch (error) {
+                        // Silent fallback
+                    }
+                }
+                localStorage.removeItem('simimi:current-session');
+                console.log('✅ User session cleared');
+            } catch (error) {
+                // Silent error - clearing session failure is not critical
+            }
+        }
+
+        // ========== NOTIFICATION HELPER ==========
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${type}`;
+            notification.style.position = 'fixed';
+            notification.style.top = '80px';
+            notification.style.right = '20px';
+            notification.style.zIndex = '3000';
+            notification.style.maxWidth = '300px';
+            notification.innerHTML = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // ========== GOOGLE SHEETS FUNCTIONS ==========
+        async function sendToGoogleSheet(data) {
+            try {
+                console.log('📤 Mengirim data ke Google Sheets:', data);
+                
+                const response = await fetch(GOOGLE_SHEET_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                console.log('✅ Data berhasil dikirim ke Google Sheets');
+                return true;
+            } catch (error) {
+                console.error('❌ Error sending to Google Sheet:', error);
+                return false;
+            }
+        }
+
+        // ========== LOGIN FUNCTIONS ==========
+        function showLoginForm(mode) {
+            loginMode = mode;
+            document.getElementById('loginChoice').classList.add('hidden');
+            if (mode === 'user') {
+                document.getElementById('userLoginForm').classList.remove('hidden');
+                document.getElementById('adminLoginForm').classList.add('hidden');
+            } else {
+                document.getElementById('adminLoginForm').classList.remove('hidden');
+                document.getElementById('userLoginForm').classList.add('hidden');
+            }
+        }
+
+        function backToLoginChoice() {
+            document.getElementById('userLoginForm').classList.add('hidden');
+            document.getElementById('adminLoginForm').classList.add('hidden');
+            document.getElementById('loginChoice').classList.remove('hidden');
+            loginMode = null;
+        }
+
+        async function loginUser() {
+            const email = document.getElementById('userEmail').value;
+
+            if (email) {
+                currentUser = {
+                    email: email,
+                    role: 'user'
+                };
+
+                await saveUserSession(email, 'user');
+
+                document.getElementById('loginPage').classList.add('hidden');
+                document.getElementById('userDashboard').classList.remove('hidden');
+                document.getElementById('profilEmail').value = email;
+                showPage('dashboard');
+                await loadUserData();
+            } else {
+                alert('Silakan masukkan email!');
+            }
+        }
+
+        async function loginAdmin() {
+            const email = document.getElementById('adminEmail').value;
+            const password = document.getElementById('adminPassword').value;
+
+            if (password === 'admin123' && email.toLowerCase().includes('admin')) {
+                currentUser = {
+                    email: email,
+                    role: 'admin'
+                };
+
+                await saveUserSession(email, 'admin');
+
+                document.getElementById('loginPage').classList.add('hidden');
+                document.getElementById('adminDashboard').classList.remove('hidden');
+                showAdminPage('adminDash');
+                await loadAdminData();
+            } else {
+                alert('Email atau password admin salah!\n\nEmail harus mengandung kata "admin"\nPassword: admin123');
+            }
+        }
+
+        async function logout() {
+            await clearUserSession();
+            
+            currentUser = null;
+            loginMode = null;
+            document.getElementById('loginPage').classList.remove('hidden');
+            document.getElementById('userDashboard').classList.add('hidden');
+            document.getElementById('adminDashboard').classList.add('hidden');
+            document.getElementById('userLoginForm').classList.add('hidden');
+            document.getElementById('adminLoginForm').classList.add('hidden');
+            document.getElementById('loginChoice').classList.remove('hidden');
+            
+            // Reset forms
+            document.getElementById('userEmail').value = '';
+            document.getElementById('adminEmail').value = '';
+            document.getElementById('adminPassword').value = '';
+        }
+
+        // ========== NAVIGATION FUNCTIONS - USER ==========
+        function showPage(page) {
+            document.getElementById('dashboardContent').classList.add('hidden');
+            document.getElementById('ajukanContent').classList.add('hidden');
+            document.getElementById('statusContent').classList.add('hidden');
+            document.getElementById('profilContent').classList.add('hidden');
+
+            if (page === 'dashboard') {
+                document.getElementById('dashboardContent').classList.remove('hidden');
+                updateDashboard();
+            } else if (page === 'ajukan') {
+                document.getElementById('ajukanContent').classList.remove('hidden');
+            } else if (page === 'status') {
+                document.getElementById('statusContent').classList.remove('hidden');
+                displayRequests();
+            } else if (page === 'profil') {
+                document.getElementById('profilContent').classList.remove('hidden');
+            }
+        }
+
+        // ========== NAVIGATION FUNCTIONS - ADMIN ==========
+        function showAdminPage(page) {
+            document.getElementById('adminDashContent').classList.add('hidden');
+            document.getElementById('adminRequestsContent').classList.add('hidden');
+
+            if (page === 'adminDash') {
+                document.getElementById('adminDashContent').classList.remove('hidden');
+                updateAdminDashboard();
+            } else if (page === 'adminRequests') {
+                document.getElementById('adminRequestsContent').classList.remove('hidden');
+                displayAdminRequests();
+            }
+        }
+
+        // ========== SUBMIT REQUEST FUNCTION ==========
+        async function submitRequest() {
+            const request = {
+                id: Date.now(),
+                email: currentUser.email,
+                bagian: document.getElementById('bagian').value,
+                tanggal: document.getElementById('tanggalAcara').value,
+                jenisAcara: document.getElementById('jenisAcara').value,
+                namaAcara: document.getElementById('namaAcara').value,
+                jumlahPeserta: document.getElementById('jumlahPeserta').value,
+                suratPermintaan: document.getElementById('suratPermintaan').files[0]?.name || 'Tidak ada',
+                rundown: document.getElementById('rundownAcara').files[0]?.name || 'Tidak ada',
+                status: 'Pending',
+                catatan: '',
+                tanggalPengajuan: new Date().toLocaleDateString('id-ID'),
+                waktuPengajuan: new Date().toLocaleTimeString('id-ID')
+            };
+
+            requests.push(request);
+            await saveRequestsToStorage();
+
+            console.log('📝 Permohonan dibuat (status: Pending)');
+
+            alert('✅ Permohonan berhasil diajukan! Menunggu approval admin.');
+            document.getElementById('ajukanForm').reset();
+            document.getElementById('suratFile').innerHTML = '';
+            document.getElementById('rundownFile').innerHTML = '';
+            showPage('dashboard');
+            await loadUserData();
+        }
+
+        // ========== FILE UPLOAD FUNCTIONS ==========
+        function handleFileUpload(input, targetId) {
+            const target = document.getElementById(targetId);
+            if (input.files.length > 0) {
+                target.innerHTML = `
+                    <div class="file-item">
+                        <span>📎 ${input.files[0].name}</span>
+                        <button type="button" class="btn-remove" onclick="removeFile('${input.id}', '${targetId}')">Hapus</button>
+                    </div>
+                `;
+            }
+        }
+
+        function removeFile(inputId, targetId) {
+            document.getElementById(inputId).value = '';
+            document.getElementById(targetId).innerHTML = '';
+        }
+
+        // ========== USER DATA FUNCTIONS ==========
+        async function loadUserData() {
+            await loadRequestsFromStorage();
+            updateDashboard();
+            displayRequests();
+        }
+
+        function updateDashboard() {
+            const userRequests = requests.filter(r => r.email === currentUser.email);
+            document.getElementById('totalPermohonan').textContent = userRequests.length;
+            document.getElementById('pendingPermohonan').textContent = userRequests.filter(r => r.status === 'Pending').length;
+            document.getElementById('approvedPermohonan').textContent = userRequests.filter(r => r.status === 'Disetujui').length;
+
+            // Recent Requests
+            const recentDiv = document.getElementById('recentRequests');
+            if (userRequests.length === 0) {
+                recentDiv.innerHTML = '<p style="color: #999;">Belum ada permohonan</p>';
+            } else {
+                const recent = userRequests.slice(-3).reverse();
+                recentDiv.innerHTML = recent.map(r => `
+                    <div class="stat-box">
+                        <div>
+                            <strong>${r.namaAcara}</strong><br>
+                            <small>${r.tanggal} - ${r.bagian}</small>
+                        </div>
+                        <span class="badge badge-${r.status === 'Pending' ? 'pending' : r.status === 'Disetujui' ? 'approved' : 'rejected'}">${r.status}</span>
+                    </div>
+                `).join('');
+            }
+
+            // Notifications
+            const notifDiv = document.getElementById('notificationList');
+            const notifications = userRequests.filter(r => r.status !== 'Pending');
+            if (notifications.length === 0) {
+                notifDiv.innerHTML = '<p style="color: #999;">Belum ada notifikasi</p>';
+            } else {
+                notifDiv.innerHTML = notifications.slice(-5).reverse().map(r => `
+                    <div class="notification ${r.status === 'Disetujui' || r.status === 'Ditolak' ? 'notification-new' : ''}">
+                        <div>
+                            <strong>${r.status === 'Disetujui' ? '✅' : '❌'} Permohonan ${r.status}</strong><br>
+                            <small>${r.namaAcara} - ${r.tanggal}</small>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // ========== DISPLAY REQUESTS - USER ==========
+        function displayRequests() {
+            const userRequests = requests.filter(r => r.email === currentUser.email);
+            const tbody = document.getElementById('requestTableBody');
+            
+            if (userRequests.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #999;">Belum ada data permohonan</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = userRequests.map((r, i) => `
+                <tr>
+                    <td>${i + 1}</td>
+                    <td>${r.bagian}</td>
+                    <td>${r.tanggal}</td>
+                    <td>${r.jenisAcara}</td>
+                    <td>${r.namaAcara}</td>
+                    <td>${r.jumlahPeserta}</td>
+                    <td><span class="badge badge-${r.status === 'Pending' ? 'pending' : r.status === 'Disetujui' ? 'approved' : 'rejected'}">${r.status}</span></td>
+                    <td><button class="btn-action btn-view" onclick="viewDetail(${r.id})">Lihat</button></td>
+                </tr>
+            `).join('');
+        }
+
+        // ========== FILTER REQUESTS - USER ==========
+        function filterRequests() {
+            const filter = document.getElementById('filterStatus').value;
+            const userRequests = requests.filter(r => r.email === currentUser.email);
+            const filtered = filter ? userRequests.filter(r => r.status === filter) : userRequests;
+            
+            const tbody = document.getElementById('requestTableBody');
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #999;">Tidak ada data</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = filtered.map((r, i) => `
+                <tr>
+                    <td>${i + 1}</td>
+                    <td>${r.bagian}</td>
+                    <td>${r.tanggal}</td>
+                    <td>${r.jenisAcara}</td>
+                    <td>${r.namaAcara}</td>
+                    <td>${r.jumlahPeserta}</td>
+                    <td><span class="badge badge-${r.status === 'Pending' ? 'pending' : r.status === 'Disetujui' ? 'approved' : 'rejected'}">${r.status}</span></td>
+                    <td><button class="btn-action btn-view" onclick="viewDetail(${r.id})">Lihat</button></td>
+                </tr>
+            `).join('');
+        }
+
+        // ========== VIEW DETAIL FUNCTION ==========
+        function viewDetail(id) {
+            const request = requests.find(r => r.id === id);
+            if (!request) return;
+
+            document.getElementById('detailContent').innerHTML = `
+                <div class="form-group">
+                    <label>Pengaju</label>
+                    <p>${request.email}</p>
+                </div>
+                <div class="form-group">
+                    <label>Bagian</label>
+                    <p>${request.bagian}</p>
+                </div>
+                <div class="form-group">
+                    <label>Tanggal Acara</label>
+                    <p>${request.tanggal}</p>
+                </div>
+                <div class="form-group">
+                    <label>Jenis Acara</label>
+                    <p>${request.jenisAcara}</p>
+                </div>
+                <div class="form-group">
+                    <label>Nama Acara</label>
+                    <p>${request.namaAcara}</p>
+                </div>
+                <div class="form-group">
+                    <label>Jumlah Peserta</label>
+                    <p>${request.jumlahPeserta} orang</p>
+                </div>
+                <div class="form-group">
+                    <label>Surat Permintaan</label>
+                    <p>📎 ${request.suratPermintaan}</p>
+                </div>
+                <div class="form-group">
+                    <label>Rundown Acara</label>
+                    <p>📎 ${request.rundown}</p>
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <p><span class="badge badge-${request.status === 'Pending' ? 'pending' : request.status === 'Disetujui' ? 'approved' : 'rejected'}">${request.status}</span></p>
+                </div>
+                ${request.catatan ? `
+                <div class="form-group">
+                    <label>Catatan</label>
+                    <p>${request.catatan}</p>
+                </div>
+                ` : ''}
+                <div class="form-group">
+                    <label>Tanggal Pengajuan</label>
+                    <p>${request.tanggalPengajuan} ${request.waktuPengajuan || ''}</p>
+                </div>
+                ${request.tanggalKeputusan ? `
+                <div class="form-group">
+                    <label>Tanggal Keputusan</label>
+                    <p>${request.tanggalKeputusan} ${request.waktuKeputusan || ''}</p>
+                </div>
+                ` : ''}
+                ${request.approvedBy ? `
+                <div class="form-group">
+                    <label>Diproses oleh</label>
+                    <p>${request.approvedBy}</p>
+                </div>
+                ` : ''}
+            `;
+
+            document.getElementById('detailModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('detailModal').style.display = 'none';
+        }
+
+        // ========== UPDATE PROFILE FUNCTION ==========
+        function updateProfil() {
+            alert('✅ Profil berhasil diupdate!');
+        }
+
+        // ========== ADMIN DATA FUNCTIONS ==========
+        async function loadAdminData() {
+            await loadRequestsFromStorage();
+            updateAdminDashboard();
+            displayAdminRequests();
+        }
+
+        function updateAdminDashboard() {
+            document.getElementById('adminTotal').textContent = requests.length;
+            document.getElementById('adminPending').textContent = requests.filter(r => r.status === 'Pending').length;
+            document.getElementById('adminApproved').textContent = requests.filter(r => r.status === 'Disetujui').length;
+            document.getElementById('adminRejected').textContent = requests.filter(r => r.status === 'Ditolak').length;
+        }
+
+        // ========== DISPLAY REQUESTS - ADMIN ==========
+        function displayAdminRequests() {
+            const tbody = document.getElementById('adminRequestTableBody');
+            
+            if (requests.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: #999;">Belum ada data permohonan</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = requests.map((r, i) => `
+                <tr>
+                    <td>${i + 1}</td>
+                    <td>${r.email}</td>
+                    <td>${r.bagian}</td>
+                    <td>${r.tanggal}</td>
+                    <td>${r.jenisAcara}</td>
+                    <td>${r.namaAcara}</td>
+                    <td>${r.jumlahPeserta}</td>
+                    <td><span class="badge badge-${r.status === 'Pending' ? 'pending' : r.status === 'Disetujui' ? 'approved' : 'rejected'}">${r.status}</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-action btn-view" onclick="viewDetail(${r.id})">Lihat</button>
+                            ${r.status === 'Pending' ? `
+                                <button class="btn-action btn-approve" onclick="openActionModal(${r.id}, 'approve')">Setujui</button>
+                                <button class="btn-action btn-reject" onclick="openActionModal(${r.id}, 'reject')">Tolak</button>
+                            ` : ''}
+                            <button class="btn-action btn-delete" onclick="openDeleteModal(${r.id})">Hapus</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // ========== FILTER REQUESTS - ADMIN ==========
+        function filterAdminRequests() {
+            const filter = document.getElementById('adminFilterStatus').value;
+            const filtered = filter ? requests.filter(r => r.status === filter) : requests;
+            
+            const tbody = document.getElementById('adminRequestTableBody');
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: #999;">Tidak ada data</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = filtered.map((r, i) => `
+                <tr>
+                    <td>${i + 1}</td>
+                    <td>${r.email}</td>
+                    <td>${r.bagian}</td>
+                    <td>${r.tanggal}</td>
+                    <td>${r.jenisAcara}</td>
+                    <td>${r.namaAcara}</td>
+                    <td>${r.jumlahPeserta}</td>
+                    <td><span class="badge badge-${r.status === 'Pending' ? 'pending' : r.status === 'Disetujui' ? 'approved' : 'rejected'}">${r.status}</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-action btn-view" onclick="viewDetail(${r.id})">Lihat</button>
+                            ${r.status === 'Pending' ? `
+                                <button class="btn-action btn-approve" onclick="openActionModal(${r.id}, 'approve')">Setujui</button>
+                                <button class="btn-action btn-reject" onclick="openActionModal(${r.id}, 'reject')">Tolak</button>
+                            ` : ''}
+                            <button class="btn-action btn-delete" onclick="openDeleteModal(${r.id})">Hapus</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // ========== ACTION MODAL FUNCTIONS (APPROVE/REJECT) ==========
+        function openActionModal(id, action) {
+            currentRequestId = id;
+            currentAction = action;
+            document.getElementById('actionModalTitle').textContent = action === 'approve' ? 'Setujui Permohonan' : 'Tolak Permohonan';
+            document.getElementById('actionNote').value = '';
+            document.getElementById('actionAlert').innerHTML = '';
+            document.getElementById('btnText').textContent = 'Konfirmasi';
+            document.getElementById('confirmActionBtn').disabled = false;
+            document.getElementById('actionModal').style.display = 'flex';
+        }
+
+        function closeActionModal() {
+            document.getElementById('actionModal').style.display = 'none';
+            currentRequestId = null;
+            currentAction = null;
+        }
+
+        // ========== CONFIRM ACTION (APPROVE/REJECT) ==========
+        async function confirmAction() {
+            const note = document.getElementById('actionNote').value;
+            const request = requests.find(r => r.id === currentRequestId);
+            
+            if (!request) return;
+
+            // Disable button and show loading
+            const btn = document.getElementById('confirmActionBtn');
+            const btnText = document.getElementById('btnText');
+            btn.disabled = true;
+            btnText.innerHTML = 'Mengirim <span class="loading-spinner"></span>';
+
+            // Update status
+            const newStatus = currentAction === 'approve' ? 'Disetujui' : 'Ditolak';
+            request.status = newStatus;
+            request.catatan = note || (currentAction === 'approve' ? 'Permohonan disetujui' : 'Permohonan ditolak');
+            request.tanggalKeputusan = new Date().toLocaleDateString('id-ID');
+            request.waktuKeputusan = new Date().toLocaleTimeString('id-ID');
+            request.approvedBy = currentUser.email;
+
+            // Save to persistent storage (SHARED)
+            await saveRequestsToStorage();
+
+            // Prepare data for Google Sheet
+            const sheetData = {
+                timestamp: new Date().toISOString(),
+                tanggalPengajuan: request.tanggalPengajuan,
+                waktuPengajuan: request.waktuPengajuan,
+                tanggalKeputusan: request.tanggalKeputusan,
+                waktuKeputusan: request.waktuKeputusan,
+                pengaju: request.email,
+                bagian: request.bagian,
+                tanggalAcara: request.tanggal,
+                jenisAcara: request.jenisAcara,
+                namaAcara: request.namaAcara,
+                jumlahPeserta: request.jumlahPeserta,
+                suratPermintaan: request.suratPermintaan,
+                rundown: request.rundown,
+                status: newStatus,
+                catatan: request.catatan,
+                approvedBy: request.approvedBy
+            };
+
+            // Send to Google Sheet
+            console.log('📤 Admin memproses permohonan - Mengirim ke Google Sheets...');
+            const success = await sendToGoogleSheet(sheetData);
+
+            // Show result
+            const alertDiv = document.getElementById('actionAlert');
+            if (success) {
+                alertDiv.innerHTML = `
+                    <div class="alert alert-success">
+                        ✅ Permohonan berhasil ${newStatus.toLowerCase()} dan data telah tersinkronisasi!
+                    </div>
+                `;
+            } else {
+                alertDiv.innerHTML = `
+                    <div class="alert alert-info">
+                        ✅ Permohonan berhasil ${newStatus.toLowerCase()}! Data sedang disinkronkan.
+                    </div>
+                `;
+            }
+
+            // Update UI
+            btnText.textContent = 'Selesai ✓';
+            
+            setTimeout(() => {
+                closeActionModal();
+                updateAdminDashboard();
+                displayAdminRequests();
+            }, 2000);
+        }
+
+        // ========== CLOSE MODAL WHEN CLICKING OUTSIDE ==========
+        window.onclick = function(event) {
+            if (event.target.className === 'modal') {
+                event.target.style.display = 'none';
+            }
+        }
+
+        // ========== REFRESH DATA FUNCTION ==========
+        async function refreshAdminData() {
+            console.log('🔄 Refreshing admin data...');
+            
+            // Show loading notification
+            const loadingNotif = document.createElement('div');
+            loadingNotif.className = 'alert alert-info';
+            loadingNotif.style.position = 'fixed';
+            loadingNotif.style.top = '20px';
+            loadingNotif.style.right = '20px';
+            loadingNotif.style.zIndex = '3000';
+            loadingNotif.innerHTML = '🔄 Memuat data terbaru...';
+            document.body.appendChild(loadingNotif);
+            
+            // Reload dari persistent storage
+            await loadRequestsFromStorage();
+            
+            // Update semua tampilan
+            updateAdminDashboard();
+            displayAdminRequests();
+            
+            // Reset filter
+            document.getElementById('adminFilterStatus').value = '';
+            
+            // Remove loading and show success
+            loadingNotif.remove();
+            
+            const notification = document.createElement('div');
+            notification.className = 'alert alert-success';
+            notification.style.position = 'fixed';
+            notification.style.top = '20px';
+            notification.style.right = '20px';
+            notification.style.zIndex = '3000';
+            notification.innerHTML = '✅ Data berhasil di-refresh!';
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+            
+            console.log('✅ Admin data refreshed successfully');
+        }
+
+        // ========== DELETE MODAL FUNCTIONS ==========
+        function openDeleteModal(id) {
+            deleteRequestId = id;
+            const request = requests.find(r => r.id === id);
+            
+            if (!request) return;
+            
+            document.getElementById('deleteRequestInfo').innerHTML = `
+                <strong>Informasi Permohonan:</strong><br>
+                <div style="margin-top: 0.5rem;">
+                    📧 Pengaju: ${request.email}<br>
+                    🏢 Bagian: ${request.bagian}<br>
+                    📅 Tanggal Acara: ${request.tanggal}<br>
+                    🎯 Acara: ${request.namaAcara}<br>
+                    ⚡ Status: <span class="badge badge-${request.status === 'Pending' ? 'pending' : request.status === 'Disetujui' ? 'approved' : 'rejected'}">${request.status}</span>
+                </div>
+            `;
+            
+            document.getElementById('deleteAlert').innerHTML = '';
+            document.getElementById('deleteText').textContent = 'Hapus Permohonan';
+            document.getElementById('confirmDeleteBtn').disabled = false;
+            document.getElementById('deleteModal').style.display = 'flex';
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').style.display = 'none';
+            deleteRequestId = null;
+        }
+
+        async function confirmDelete() {
+            if (!deleteRequestId) return;
+            
+            const btn = document.getElementById('confirmDeleteBtn');
+            const btnText = document.getElementById('deleteText');
+            
+            // Disable button and show loading
+            btn.disabled = true;
+            btnText.innerHTML = 'Menghapus <span class="loading-spinner"></span>';
+            
+            // Find and remove request
+            const index = requests.findIndex(r => r.id === deleteRequestId);
+            
+            if (index !== -1) {
+                const deletedRequest = requests[index];
+                requests.splice(index, 1);
+                
+                // Save to persistent storage (SHARED)
+                await saveRequestsToStorage();
+                
+                console.log('🗑️ Permohonan berhasil dihapus:', deletedRequest);
+                
+                // Show success message
+                const alertDiv = document.getElementById('deleteAlert');
+                alertDiv.innerHTML = `
+                    <div class="alert alert-success">
+                        ✅ Permohonan berhasil dihapus dan tersinkronisasi!
+                    </div>
+                `;
+                
+                btnText.textContent = 'Terhapus ✓';
+                
+                setTimeout(() => {
+                    closeDeleteModal();
+                    updateAdminDashboard();
+                    displayAdminRequests();
+                }, 1500);
+            } else {
+                // Show error message
+                const alertDiv = document.getElementById('deleteAlert');
+                alertDiv.innerHTML = `
+                    <div class="alert alert-error">
+                        ❌ Terjadi kesalahan saat menghapus data!
+                    </div>
+                `;
+                
+                btn.disabled = false;
+                btnText.textContent = 'Hapus Permohonan';
+            }
+        }
+    </script>
+</body>
+</html>
